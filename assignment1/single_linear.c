@@ -8,6 +8,10 @@
     fprintf (stderr, "malloc(): failed to allocate memory\n");\
     return y;\
 }
+#define CHECK_UNDERFLOW(x) if (is_empty (x)) {\
+    fprintf (stderr, "!Underflow. List is empty. Cannot delete.\n");\
+    return 0;\
+}
 
 typedef struct node { 
     int info;
@@ -24,7 +28,7 @@ void display (node_t *start)
 {
     node_t *p = start;
     if (is_empty(start)) {
-        printf ("List is empty\n");
+        printf ("List is empty.\n");
         return;
     }
     while (p != NULL)
@@ -39,19 +43,19 @@ void display (node_t *start)
 node_t *create_list (int *arr, int len)
 {
     int i;
-    node_t *n, *temp, *start;
+    node_t *n, *tmp, *start;
     n = (node_t *) malloc (sizeof (node_t));
     RETURN_IF_NULL (n, NULL);
 
     n->info = arr[0];
-    start = temp = n;
+    start = tmp = n;
     for (i = 1; i < len; i++)
     {
         n = (node_t *) malloc (sizeof (node_t));
         RETURN_IF_NULL (n, NULL);
-        temp->link = n;
+        tmp->link = n;
         n->info = arr[i];
-        temp = n;
+        tmp = n;
     } 
     n->link = NULL;
     return start;
@@ -63,16 +67,20 @@ int insert_at_start (node_t **start, int info)
     node_t *newnode = (node_t *) malloc (sizeof (node_t));
     RETURN_IF_NULL (newnode, 0);
     newnode->info = info;
-    newnode->link = *start; /* start = NULL if list is empty so it will 
-                               handle that edge case as well */
+    newnode->link = *start; /* *start = NULL if list is empty so it will 
+                                handle that edge case as well */
     *start = newnode; 
     return 1;
 } 
 
 /* add a node anywhere in the list */
-int insert_at_end (node_t *start, int info)
+int insert_at_end (node_t **start, int info)
 {
-    node_t *p = start, *newnode;
+    node_t *p, *newnode;
+    if (is_empty (*start)) {
+        return insert_at_start (start, info);
+    }
+    p = *start;
     newnode = (node_t *) malloc (sizeof (node_t));
     RETURN_IF_NULL (newnode, 0);
     newnode->info = info;
@@ -85,20 +93,23 @@ int insert_at_end (node_t *start, int info)
 }
 
 /* add a node after a certain index */
-int insert_after_index (node_t *start, int info, int index)
+int insert_after_index (node_t **start, int info, size_t index)
 {
+    size_t n;
     node_t *p, *newnode;
-    p = start;
+    if (is_empty (*start)) {
+        return -1; /* -1 means out of bounds */
+    }
+    p = *start;
     newnode = (node_t *) malloc (sizeof (node_t));
     RETURN_IF_NULL (newnode, 0);
     newnode->info = info; 
-    int n = 0;
+    n = 0;
     while (n < index)
     {
         if (p == NULL) {    
-            /* index exceeds number of nodes, return */
-            free (newnode);
-            return -1; 
+            free (newnode); /* could not be inserted */
+            return -1; /* index exceeds number of nodes, return */
         }
         p = p->link;
         n++;
@@ -111,11 +122,9 @@ int insert_after_index (node_t *start, int info, int index)
 /* remove node start  */
 int delete_at_start (node_t **start, int *removed)
 {
-    if (is_empty (*start)) {
-        fprintf (stderr, "Underflow: list is empty. Cannot delete!\n");
-        return 0;
-    }
-    node_t *tmp = *start; 
+    node_t *tmp;
+    CHECK_UNDERFLOW (*start);
+    tmp = *start; 
     /* handles edge case when only one node in list */
     *start = (*start)->link; 
     *removed = tmp->info; /* store removed element before freeing*/
@@ -124,13 +133,18 @@ int delete_at_start (node_t **start, int *removed)
 }
 
 /* remove elements from the end of the list */
-int delete_at_end (node_t *start, int *removed)
+int delete_at_end (node_t **start, int *removed)
 {
-    node_t *tmp, *p = start;
-    if (is_empty (start)) {
-        fprintf (stderr, "Underflow: list is empty. Cannot delete!\n");
-        return 0;
-    }
+    node_t *tmp, *p;
+    CHECK_UNDERFLOW (*start);
+    p = *start; 
+    if (p->link == NULL) {
+        /* when there is only one node in the list */
+        *removed = (*start)->info;
+        free (*start);
+        *start = NULL;
+        return 1;
+    } 
     while ((p->link)->link != NULL)
     {
         p = p->link;
@@ -144,16 +158,21 @@ int delete_at_end (node_t *start, int *removed)
 }
 
 /* remove elements at arbitrary index */
-int delete_at_index (node_t *start, int n1, int *removed)
+int delete_at_index (node_t **start, size_t index, int *removed)
 {
-    int i;
-    node_t *tmp,*p = start;
-    for (i = 0; i < n1; i++)
+    size_t i;
+    node_t *tmp, *p;
+    if (index == 0) {
+        return delete_at_start (start, removed);
+    }
+    CHECK_UNDERFLOW (*start);
+    p = *start;
+    for (i = 0; i < index; i++)
     {
         tmp = p;
         p = p->link;
         if (p == NULL) /* index exceeds number of nodes, return */
-            return 0;
+            return -1;
     }
     tmp->link = p->link;
     *removed = p->info; 
@@ -164,51 +183,53 @@ int delete_at_index (node_t *start, int n1, int *removed)
 /* frees memory of all remaining nodes */
 int destroy_list (node_t *start) 
 {
-    node_t *p = start, *temp;
+    node_t *p = start, *tmp;
     if (is_empty(start))
         return 0; /* nothing to free */
     while (p != NULL)
     {
-        temp = p->link;
+        tmp = p->link;
         free (p);
-        p = temp;
+        p = tmp;
     }
     return 1;
 }
                           /* end of implementation */
 
-/* macro to safely get input from the user and store in variable  */
+/* macro to get input from the user and store in variable  */
 #define GET_NUM(from,into)  if (fgets (from, BUFF, stdin) == NULL) {\
-    fprintf (stderr, "IO Error. Exiting process.\n");\
+    fprintf (stderr, "!IO Error. Exiting process.\n");\
     exit (1);\
 }\
-else if (sscanf (from, "%d", &into) == 0) {\
-    INVALID_INPUT();\
+else if ((sscanf (from, "%d", &into) == 0)) {\
+    fprintf (stderr, INVALID_INPUT);\
     continue;\
 }
-/* diplay help menu */
-#define DISPLAY_MENU() printf ("c\tCreate a new list\n"\
-                                "p\tPrint list\n"\
-                                "i\tInsert element into list\n"\
-                                "d\tDelete element from list\n"\
-                                "h\tDisplay this help menu\n"\
-                                "q\tQuit\n");
-#define INVALID_INPUT() fprintf (stderr, "?\n")
+
+#define MENU "Commands:\n"\
+             "---------\n"\
+             "c\tCreate a new list\n"\
+             "p\tPrint list\n"\
+             "i\tInsert element into list\n"\
+             "d\tDelete element from list\n"\
+             "h\tDisplay this help menu\n"\
+             "q\tQuit\n"
+#define INVALID_INPUT "?\n"
 #define BUFF 256
 #define PROMPT ">> "
 
 /* main routine to test the functions defined */
 int main (void)
 {
-    int i, x;
+    int i, x, y;
     int choice, index, to_be_inserted;
     int initial_size, *initial_list; 
 
     node_t *l = NULL; /* list is initially empty */
     char cmd[BUFF], input[BUFF]; /* buffers to store user input */
 
-    puts ("Implementation of a Singly Linked Linear List\nCommands:");
-    DISPLAY_MENU ();
+    printf ("\nImplementation of a Singly Linked Linear List\n");
+    printf (MENU);
     while (1)
     {
         printf (PROMPT);
@@ -222,8 +243,11 @@ int main (void)
                     } 
                     printf ("Enter the initial number of elements\n" PROMPT); 
                     GET_NUM (input, initial_size);
-                    initial_list = (int *) malloc (sizeof (int));
-                    RETURN_IF_NULL (initial_list, 1);
+                    if (initial_size == 0) {
+                        fprintf (stderr, "!Provide a non zero size\n");
+                        continue;
+                    }
+                    initial_list = (int *) malloc (sizeof (int) * initial_size); 
                     for (i = 0; i < initial_size; i++) {
                         GET_NUM (input, initial_list[i]);
                     } 
@@ -254,7 +278,7 @@ int main (void)
                             }
                             break; 
                         case 2:
-                            if (insert_at_end (l, to_be_inserted)) {
+                            if (insert_at_end (&l, to_be_inserted)) {
                                 printf ("Element '%d' has been added "
                                         "to end.\n", to_be_inserted);
                             }
@@ -262,8 +286,8 @@ int main (void)
                         case 3:
                             printf ("N = ? ");
                             GET_NUM (input, index);
-                            x = insert_after_index (l, to_be_inserted, index);
-                            if (x) { 
+                            x = insert_after_index (&l, to_be_inserted, index);
+                            if (x == 1) { 
                                 printf ("Element '%d' has been added after "
                                         "index %d.\n", to_be_inserted, index);
                             }
@@ -273,7 +297,7 @@ int main (void)
                             break;
 
                         default:
-                            INVALID_INPUT();
+                            fprintf (stderr, INVALID_INPUT);
                     } 
                     break;
 
@@ -286,47 +310,53 @@ int main (void)
                     switch (choice) {
                         case 1:
                             if (delete_at_start (&l, &x)) {
-                                printf ("Element '%d' has been removed from" 
-                                        " beginning.\n", x); 
+                                printf ("Element '%d' has been removed " 
+                                        "from beginning.\n", x); 
                             }
                             break; 
                         case 2:
-                            if (delete_at_end (l, &x)) {
-                                printf ("Element '%d' has been removed from"
-                                        "end.\n", x);
+                            if (delete_at_end (&l, &x)) {
+                                printf ("Element '%d' has been removed "
+                                        "from the end.\n", x);
                             }
                             break;
                         case 3:
                             printf ("N = ? ");
                             GET_NUM (input, index); 
-                            if (delete_at_index (l,index, &x)) { 
-                                printf ("Element '%d' has been added after "
-                                        "index %d.\n", x, index);
+                            y = delete_at_index (&l,index, &x);
+                            if (y == 1) { 
+                                printf ("Element '%d' has been removed "
+                                        "at index %d.\n", x, index);
                             }
-                            else {
+                            else if (y == -1) {
+                                /* TODO better this */
                                 fprintf (stderr, "!Index out of bounds.\n");
                             }
                             break;
 
                         default:
-                            INVALID_INPUT();
+                            fprintf (stderr, INVALID_INPUT);
                     } 
                     break;
 
                 case 'q':
-                    destroy_list (l);
-                    printf ("List destroyed. Exiting process.\n");
+                    if (l != NULL) { /* deallocate the list only 
+                                        if it exists */
+                        destroy_list (l);
+                        printf ("List destroyed.\n");
+                    }
+                    printf ("Exiting process.\n");
                     exit (0);
 
                 default: 
-                    INVALID_INPUT();
+                    fprintf (stderr, INVALID_INPUT);
                 case 'h':
-                    DISPLAY_MENU ();
+                    printf (MENU);
                     continue;
             }
         }
         else {
-            fprintf (stderr, "IO Error. Exiting process.\n");
+            fprintf (stderr, "!IO Error. Exiting process.\n");
             exit (1); 
         }
     }

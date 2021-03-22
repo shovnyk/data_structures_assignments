@@ -1,206 +1,233 @@
-/* single_circular.c: C program to implement a singly linked circular list */
+/* double_linear.c: C program to implement a singly linked linear list */      
 
 #include <stdio.h> 
-#include <stdlib.h>
+#include <stdlib.h> 
 
 #define  RETURN_IF_NULL(x,y) if (x == NULL) {\
     fprintf (stderr, "malloc(): failed to allocate memory\n");\
     return y;\
 }
-/* list empty = nothing to delete, report underflow  */
 #define CHECK_UNDERFLOW(x) if (is_empty (x)) {\
     fprintf (stderr, "!Underflow. List is empty. Cannot delete.\n");\
     return 0;\
 }
 
+#define new(x) (x*)malloc (sizeof (x))
+
 typedef struct node { 
     int info;
-    struct node *link;
-} node_t; 
+    struct node *prev;
+    struct node *next;
+} node_t;
 
-int is_empty (node_t *end) {
-    return (end == NULL);
+int is_empty (node_t *start) {
+    return (start == NULL);
 }
 
-void display (node_t *end)
+void display (node_t *start)
 {
-    node_t *p, *start; 
-    if (is_empty (end)) {
+    node_t *p;
+    if (is_empty (start)) {
         printf ("List is empty\n");
         return;
     }
-    p = start = end->link;
-    do {
+    p = start;
+    while (p != NULL)
+    {
         printf ("%d ", p->info);
-        p = p->link;
-    } while (p != start); /* reverse till it cycles back to start */
+        p = p->next;
+    }
     putchar ('\n');
 }
 
+/* initialize a linked list with data collected in an array */
 node_t *create_list (int *arr, int len)
 {
-    int i = 0;
-    node_t *n, *tmp, *start;
-    n =  (node_t *)malloc (sizeof (node_t));
-    RETURN_IF_NULL (n, NULL);
-    n->info = arr[i];
-    start = tmp = n;
+    int i;
+    node_t *p, *temp, *start;
+    start = new (node_t);
+    RETURN_IF_NULL (start, NULL);
+    p = start;
+    p->info = arr[0];
+    p->prev = NULL;
     for (i = 1; i < len; i++)
     {
-        n = (node_t *)malloc (sizeof (node_t));
-        RETURN_IF_NULL (n, NULL);
-        tmp->link = n;
-        n->info = arr[i];
-        tmp = n;
-    } 
-    /* set link of last node to point to first node */
-    n->link = start; 
-    /* return pointer to last element */
-    return n; 
+        temp = new (node_t);
+        RETURN_IF_NULL (temp, NULL);
+        temp->info = arr[i];
+        temp->prev = p;
+        p->next = temp;
+        p = temp;
+    }
+    p->next = NULL;
+    return start;
 }
 
-int insert_at_start (node_t **end, int info)
+/* insert into an empty list */
+int insert_into_empty (node_t **start, int info)
 {
-    node_t *newnode = (node_t *) malloc (sizeof (node_t));
+    node_t *newnode = new (node_t);
     RETURN_IF_NULL (newnode, 0);
     newnode->info = info;
-    if (is_empty (*end)) {
-        newnode->link = newnode;
-        (*end) = newnode; /* make end point to new node */
-        return 1;
-    }
-    /* add an element after end but don't move the end pointer */
-    newnode->link = (*end)->link;
-    (*end)->link = newnode;
-    return 1;
-}    
-
-int insert_at_end (node_t **end, int info)
-{
-    /* same as before, except the end pointer is set
-       to point to the newly inserted node */
-    if (!insert_at_start (end, info)) {
-        return 0;
-    }
-    (*end) = (*end)->link;
+    newnode->next = NULL;
+    newnode->prev = NULL;
+    (*start) = newnode; /* make start point to this node */
     return 1;
 }
 
-int insert_after_index (node_t **end, int info, size_t index)
+/* add a node at the beginning of the list */
+int insert_at_start (node_t **start, int info)
+{ 
+    node_t *newnode;
+    if (is_empty (*start)) {
+        return insert_into_empty (start, info);
+    }
+    newnode = new (node_t);
+    RETURN_IF_NULL (newnode, 0);
+    newnode->info = info;
+    newnode->next = *start;
+    newnode->prev = NULL;
+    (*start)->prev = newnode;
+    (*start) = newnode;
+    return 1;
+} 
+
+/* add a node anywhere in the list */
+int insert_at_end (node_t **start, int info)
+{
+    node_t *newnode, *p;
+    if (is_empty (*start)) {
+        return insert_into_empty (start, info);
+    }
+    newnode = new (node_t);
+    RETURN_IF_NULL (newnode, 0);
+    newnode->info = info;
+    p = *start;
+    while (p->next != NULL) { /* move to the last node */
+        p = p->next;
+    }
+    newnode->next = NULL;
+    newnode->prev = p;
+    p->next = newnode;
+    return 1;
+}
+
+/* add a node after a certain index */
+int insert_after_index (node_t **start, int info, size_t index)
 {
     size_t n;
-    node_t *newnode, *p, *start;
-    if (is_empty (*end)) {
-        return -1;
+    node_t *newnode, *p;
+    if (is_empty (*start)) {
+        return -1; /* -1 means out of bounds */
     }
-    p = start = (*end)->link; /* start from the first node */
-    newnode = (node_t*) malloc (sizeof (node_t));
+    newnode = new (node_t);
     RETURN_IF_NULL (newnode, 0);
     newnode->info = info;
-    n = 0;
-    do {
+    p = *start; n = 0;
+    while (p->next != NULL) {
         if (n++ == index) {
-            newnode->link = p->link;
-            p->link = newnode;
-            if (p == *end) {
-                /* if inserted after last node, end pointer should 
-                   be updated or else it will be logically added
-                   at the beginning */
-                *end = newnode;
-            }
+            newnode->prev = p;
+            newnode->next = p->next;
+            (p->next)->prev = newnode;
+            p->next = newnode;
             return 1;
         }
-        p = p->link;
-    } while (p != start);
-    free (newnode); /* could not be inserted */
-    return -1;
-}
-
-int delete_at_start (node_t **end, int *removed)
-{
-    node_t *start; 
-    CHECK_UNDERFLOW (*end);     /* if empty */
-    if (*end == (*end)->link)   /* if only one node */
-    {
-        *removed = (*end)->info;
-        free (*end);
-        *end = NULL;
+        p = p->next;
+    }
+    if (n == index) { /* index is the last node */
+        newnode->next = NULL;
+        newnode->prev = p;
+        p->next = newnode;
         return 1;
     }
-    /* make the last node point to the second node */
-    start = (*end)->link;
-    (*end)->link = start->link;
-    *removed = start->info;
-    free (start);
+    free (newnode);
+    return -1;  /* index out of bounds, could not be inserted */
+}
+
+/* remove node start  */
+int delete_at_start (node_t **start, int *removed)
+{
+    CHECK_UNDERFLOW (*start);           /* if empty */
+    if ((*start)->next == NULL) {       /* if only node node */
+        *removed = (*start)->info;
+        free (*start);
+        (*start) = NULL;
+        return 1;
+    } 
+    *removed = (*start)->info;
+    (*start) = (*start)->next;
+    free ((*start)->prev);
+    (*start)->prev = NULL;
     return 1;
 }
 
-int delete_at_end (node_t **end, int *removed)
+/* remove elements from the end of the list */
+int delete_at_end (node_t **start, int *removed)
 {
     node_t *p;
-    CHECK_UNDERFLOW (*end);     /* if empty */
-    if (*end == (*end)->link)   /* if only one node */
-    {
-        *removed = (*end)->info;
-        free (*end);
-        *end = NULL;
+    CHECK_UNDERFLOW (*start);           /* if empty */
+    if ((*start)->next == NULL) {       /* if only node node */
+        *removed = (*start)->info;
+        free (*start);
+        (*start) = NULL;
         return 1;
     } 
-    p = (*end)->link;
-    while ((p->link) != *end) {
-        p = p->link;
+    p = *start;
+    while (p->next != NULL) {
+        p = p->next;
     }
-    /* traverse to the second last node */
-    p->link = (*end)->link; 
-    *removed = (*end)->info;
-    free (*end);
-    *end = p; /* update end pointer to second last node */
+    /* p is pointing to the last node */
+    (p->prev)->next = NULL;
+    *removed = p->info;
+    free (p); 
     return 1; 
 }
 
-int delete_at_index (node_t **end, size_t index, int *removed)
-{ 
-    size_t i;
-    node_t *p, *start, *tmp;
+/* remove elements at arbitrary index */
+int delete_at_index (node_t **start, size_t index, int *removed)
+{
+    size_t n;
+    node_t *p;
     if (index == 0) {
-        return delete_at_start (end, removed);
-    }
-    CHECK_UNDERFLOW (*end);
-    p = start = (*end)->link;
-    i = 0;
-    do {
-        if (i++ == (index - 1)) {
-            tmp = p->link;
-            p->link = (p->link)->link;
-            *removed = tmp->info;
-            free (tmp);
-            if (p->link == start) { 
-                /* if last node is being deleted, update the
-                   end pointer to point to second last node */
-                *end = p;
-            } 
+        return delete_at_start (start, removed);
+    } 
+    CHECK_UNDERFLOW (*start); 
+    p = *start; n = 0;
+    while (p->next != NULL) {
+        if (n++ == index) {
+            (p->prev)->next = p->next;
+            (p->next)->prev = p->prev;
+            *removed = p->info;
+            free (p);
             return 1;
         }
-        p = p->link;
-    } while (p != start);
-    return -1;
+        p = p->next;
+    }
+    if (n == index) { /* delete from the end */
+        (p->prev)->next = NULL;
+        *removed = p->info;
+        free (p);
+        return 1;
+    }
+    return -1;  /* index out of bounds, could not be inserted */
 }
 
-int destroy_list (node_t *end) 
+/* frees memory of all remaining nodes */
+int destroy_list (node_t *start) 
 {
-    if (is_empty(end))
-        return 0; /* nothing to free */
-    node_t *p, *tmp, *start;
-    start = end->link;
+    node_t *p;
+    if (start == NULL) { /* empty list = nothing to free */
+        return 0;
+    }
     p = start;
-    do 
+    while (p->next != NULL)
     {
-        tmp = p->link;
-        free (p);
-        p = tmp;
-    } while (p != start);
-    return 1;
-} 
+        p = p->next; /* move to the next node */
+        free (p->prev); /* free the previous ndoe */
+    }
+    free (p);
+    return 1; 
+}
                           /* end of implementation */
 
 /* macro to get input from the user and store in variable  */
@@ -235,7 +262,7 @@ int main (void)
     node_t *l = NULL; /* list is initially empty */
     char cmd[BUFF], input[BUFF]; /* buffers to store user input */
 
-    printf ("\nImplementation of a Circular Linked Linear List\n");
+    printf ("\nImplementation of a Doubly Linked Linear List\n");
     printf (MENU);
     while (1)
     {

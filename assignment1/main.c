@@ -1,35 +1,37 @@
-/* macro to safely get input from the user and store in variable  */
+/* macro to get input from the user and store in variable  */
 #define GET_NUM(from,into)  if (fgets (from, BUFF, stdin) == NULL) {\
-    fprintf (stderr, "IO Error. Exiting process.\n");\
+    fprintf (stderr, "!IO Error. Exiting process.\n");\
     exit (1);\
 }\
-else if (sscanf (from, "%d", &into) == 0) {\
-    INVALID_INPUT();\
+else if ((sscanf (from, "%d", &into) == 0)) {\
+    fprintf (stderr, INVALID_INPUT);\
     continue;\
 }
-/* diplay help menu */
-#define DISPLAY_MENU() printf ("c\tCreate a new list\n"\
-                                "p\tPrint list\n"\
-                                "i\tInsert element into list\n"\
-                                "d\tDelete element from list\n"\
-                                "h\tDisplay this help menu\n"\
-                                "q\tQuit\n");
-#define INVALID_INPUT() fprintf (stderr, "?\n")
+
+#define MENU "Commands:\n"\
+             "---------\n"\
+             "c\tCreate a new list\n"\
+             "p\tPrint list\n"\
+             "i\tInsert element into list\n"\
+             "d\tDelete element from list\n"\
+             "h\tDisplay this help menu\n"\
+             "q\tQuit\n"
+#define INVALID_INPUT "?\n"
 #define BUFF 256
 #define PROMPT ">> "
 
 /* main routine to test the functions defined */
 int main (void)
 {
-    int i, x;
+    int i, x, y;
     int choice, index, to_be_inserted;
     int initial_size, *initial_list; 
 
     node_t *l = NULL; /* list is initially empty */
     char cmd[BUFF], input[BUFF]; /* buffers to store user input */
 
-    puts ("Implementation of a Singly Linked Linear List\nCommands:");
-    DISPLAY_MENU ();
+    printf ("\nImplementation of a XXX List\n");
+    printf (MENU);
     while (1)
     {
         printf (PROMPT);
@@ -43,8 +45,11 @@ int main (void)
                     } 
                     printf ("Enter the initial number of elements\n" PROMPT); 
                     GET_NUM (input, initial_size);
-                    initial_list = (int *) malloc (sizeof (int));
-                    RETURN_IF_NULL (initial_list, 1);
+                    if (initial_size == 0) {
+                        fprintf (stderr, "!Provide a non zero size\n");
+                        continue;
+                    }
+                    initial_list = (int *) malloc (sizeof (int) * initial_size); 
                     for (i = 0; i < initial_size; i++) {
                         GET_NUM (input, initial_list[i]);
                     } 
@@ -75,7 +80,7 @@ int main (void)
                             }
                             break; 
                         case 2:
-                            if (insert_at_end (l, to_be_inserted)) {
+                            if (insert_at_end (&l, to_be_inserted)) {
                                 printf ("Element '%d' has been added "
                                         "to end.\n", to_be_inserted);
                             }
@@ -83,8 +88,8 @@ int main (void)
                         case 3:
                             printf ("N = ? ");
                             GET_NUM (input, index);
-                            x = insert_after_index (l, to_be_inserted, index);
-                            if (x) { 
+                            x = insert_after_index (&l, to_be_inserted, index);
+                            if (x == 1) { 
                                 printf ("Element '%d' has been added after "
                                         "index %d.\n", to_be_inserted, index);
                             }
@@ -94,7 +99,7 @@ int main (void)
                             break;
 
                         default:
-                            INVALID_INPUT();
+                            fprintf (stderr, INVALID_INPUT);
                     } 
                     break;
 
@@ -107,47 +112,53 @@ int main (void)
                     switch (choice) {
                         case 1:
                             if (delete_at_start (&l, &x)) {
-                                printf ("Element '%d' has been removed from" 
-                                        " beginning.\n", x); 
+                                printf ("Element '%d' has been removed " 
+                                        "from beginning.\n", x); 
                             }
                             break; 
                         case 2:
-                            if (delete_at_end (l, &x)) {
-                                printf ("Element '%d' has been removed from"
-                                        "end.\n", x);
+                            if (delete_at_end (&l, &x)) {
+                                printf ("Element '%d' has been removed "
+                                        "from the end.\n", x);
                             }
                             break;
                         case 3:
                             printf ("N = ? ");
                             GET_NUM (input, index); 
-                            if (delete_at_index (l,index, &x)) { 
-                                printf ("Element '%d' has been added after "
-                                        "index %d.\n", x, index);
+                            y = delete_at_index (&l,index, &x);
+                            if (y == 1) { 
+                                printf ("Element '%d' has been removed "
+                                        "at index %d.\n", x, index);
                             }
-                            else {
+                            else if (y == -1) {
+                                /* TODO better this */
                                 fprintf (stderr, "!Index out of bounds.\n");
                             }
                             break;
 
                         default:
-                            INVALID_INPUT();
+                            fprintf (stderr, INVALID_INPUT);
                     } 
                     break;
 
                 case 'q':
-                    destroy_list (l);
-                    printf ("List destroyed. Exiting process.\n");
+                    if (l != NULL) { /* deallocate the list only 
+                                        if it exists */
+                        destroy_list (l);
+                        printf ("List destroyed.\n");
+                    }
+                    printf ("Exiting process.\n");
                     exit (0);
 
                 default: 
-                    INVALID_INPUT();
+                    fprintf (stderr, INVALID_INPUT);
                 case 'h':
-                    DISPLAY_MENU ();
+                    printf (MENU);
                     continue;
             }
         }
         else {
-            fprintf (stderr, "IO Error. Exiting process.\n");
+            fprintf (stderr, "!IO Error. Exiting process.\n");
             exit (1); 
         }
     }
