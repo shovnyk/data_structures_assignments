@@ -1,4 +1,11 @@
-/* double_linear.c: C program to implement a doubly linked linear list */      
+/* 
+   double_linear.c: C program to implement a doubly linked linear list 
+
+   Whereas a singly linked list allows traversal in only one direction
+   at any point in the list, a doubly linked list allows traveral in 
+   both directions, useful for sorting operations.
+
+*/      
 
 #include <stdio.h> 
 #include <stdlib.h> 

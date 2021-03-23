@@ -1,5 +1,11 @@
-/* double_circular.c: 
-   C program to implement a doubly linked circular list */      
+/* 
+   double_circular.c: C program to implement a doubly linked circular list
+
+   Allows constant time access to the last element and also traversal 
+   in both directions. Many operations become faster and more conven-
+   ient.
+
+*/      
 
 #include <stdio.h> 
 #include <stdlib.h> 

@@ -1,4 +1,10 @@
-/* single_linear.c: C program to implement a singly linked linear list */      
+/* 
+   single_linear.c: A C program to implement a singly linked linear list. 
+
+   Linked lists allow us to increase or decrease the size of the list by
+   dynamically allocating and deallocating memory without copying all the
+   elements like in the case of array lists.
+*/
 
 #include <stdio.h>  /* for printf and fprintf */
 #include <stdlib.h> /* for malloc and exit */

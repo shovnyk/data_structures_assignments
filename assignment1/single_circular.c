@@ -1,4 +1,11 @@
-/* single_circular.c: C program to implement a singly linked circular list */
+/* 
+   single_circular.c: C program to implement a singly linked circular list 
+
+   In a circular linked list, the next pointer of the last node points to
+   the first node and allows O(1) insertion and deletion at the end, unlike 
+   with linear lists where the same operations are O(n) due to traversal.
+
+*/
 
 #include <stdio.h> 
 #include <stdlib.h>
