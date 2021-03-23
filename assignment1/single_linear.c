@@ -19,18 +19,20 @@ typedef struct node {
 } node_t;  /* typedef for ease of use and readability */
 
 /* check if the list is empty */
-int is_empty (node_t *start) {
+int is_empty (node_t *start)
+{
     return (start == NULL);
 }
 
 /* print the contents of the list */
 void display (node_t *start)
 {
-    node_t *p = start;
+    node_t *p;
     if (is_empty(start)) {
         printf ("List is empty.\n");
         return;
     }
+    p = start;
     while (p != NULL)
     {
         printf ("%d ", p->info);
@@ -183,9 +185,10 @@ int delete_at_index (node_t **start, size_t index, int *removed)
 /* frees memory of all remaining nodes */
 int destroy_list (node_t *start) 
 {
-    node_t *p = start, *tmp;
+    node_t *p, *tmp;
     if (is_empty(start))
         return 0; /* nothing to free */
+    p = start;
     while (p != NULL)
     {
         tmp = p->link;
@@ -195,8 +198,7 @@ int destroy_list (node_t *start)
     return 1;
 }
                           /* end of implementation */
-
-/* macro to get input from the user and store in variable  */
+/* macro to get input from the user and store in variable */
 #define GET_NUM(from,into)  if (fgets (from, BUFF, stdin) == NULL) {\
     fprintf (stderr, "!IO Error. Exiting process.\n");\
     exit (1);\

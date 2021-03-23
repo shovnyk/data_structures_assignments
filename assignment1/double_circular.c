@@ -1,4 +1,5 @@
-/* double_linear.c: C program to implement a doubly linked linear list */      
+/* double_circular.c: 
+   C program to implement a doubly linked circular list */      
 
 #include <stdio.h> 
 #include <stdlib.h> 
@@ -20,25 +21,9 @@ typedef struct node {
     struct node *next;
 } node_t;
 
-int is_empty (node_t *start) 
+int is_empty (node_t *start)
 {
     return (start == NULL);
-}
-
-void display (node_t *start)
-{
-    node_t *p;
-    if (is_empty (start)) {
-        printf ("List is empty\n");
-        return;
-    }
-    p = start;
-    while (p != NULL)
-    {
-        printf ("%d ", p->info);
-        p = p->next;
-    }
-    putchar ('\n');
 }
 
 /* initialize a linked list with data collected in an array */
@@ -50,7 +35,6 @@ node_t *create_list (int *arr, int len)
     RETURN_IF_NULL (start, NULL);
     p = start;
     p->info = arr[0];
-    p->prev = NULL;
     for (i = 1; i < len; i++)
     {
         temp = new (node_t);
@@ -60,72 +44,91 @@ node_t *create_list (int *arr, int len)
         p->next = temp;
         p = temp;
     }
-    p->next = NULL;
+    p->next = start; /* next pointer of last node points to
+                        first node */
+    start->prev = p; /* prev pointer of first node points to
+                        last node */
     return start;
 }
 
-/* insert into an empty list */
+void display (node_t *start)
+{
+    node_t *p;
+    if (is_empty (start)) {
+        printf ("List empty.\n");
+        return;
+    }
+    p = start;
+    do { /* start from the beginning */
+        printf ("%d ", p->info);
+        p = p->next;
+    } while (p != start); /* stop upon returning to beginning */
+    putchar ('\n');
+    return;
+}
+
+/* routine to handle insertion if the list is empty */
 int insert_into_empty (node_t **start, int info)
 {
     node_t *newnode = new (node_t);
     RETURN_IF_NULL (newnode, 0);
     newnode->info = info;
-    newnode->next = NULL;
-    newnode->prev = NULL;
-    (*start) = newnode; /* make start point to this node */
+    *start = newnode;
+    newnode->next = newnode;
+    newnode->prev = newnode;
     return 1;
 }
 
-/* add a node at the beginning of the list */
 int insert_at_start (node_t **start, int info)
-{ 
-    node_t *newnode;
+{
+    node_t *newnode, *end;
     if (is_empty (*start)) {
         return insert_into_empty (start, info);
     }
-    newnode = new (node_t);
+    newnode  = new (node_t);
     RETURN_IF_NULL (newnode, 0);
+    end = (*start)->prev;
     newnode->info = info;
     newnode->next = *start;
-    newnode->prev = NULL;
     (*start)->prev = newnode;
-    (*start) = newnode;
+    newnode->prev = end;
+    end->next = newnode;
+    *start = newnode;
     return 1;
-} 
+}
 
-/* add a node anywhere in the list */
+/* because we have access to the end, we can can insert an element
+   in constant time. This is an advantage of circular lists. */
 int insert_at_end (node_t **start, int info)
 {
-    node_t *newnode, *p;
+    node_t *newnode, *end;
     if (is_empty (*start)) {
         return insert_into_empty (start, info);
     }
     newnode = new (node_t);
     RETURN_IF_NULL (newnode, 0);
+    end = (*start)->prev;
     newnode->info = info;
-    p = *start;
-    while (p->next != NULL) { /* move to the last node */
-        p = p->next;
-    }
-    newnode->next = NULL;
-    newnode->prev = p;
-    p->next = newnode;
+    end->next = newnode;
+    newnode->prev = end;
+    newnode->next = *start;
+    (*start)->prev = newnode;
     return 1;
 }
 
-/* add a node after a certain index */
 int insert_after_index (node_t **start, int info, size_t index)
 {
     size_t n;
-    node_t *newnode, *p;
+    node_t *newnode, *p, *end;
     if (is_empty (*start)) {
         return -1; /* -1 means out of bounds */
     }
     newnode = new (node_t);
     RETURN_IF_NULL (newnode, 0);
+    end = (*start)->prev;
     newnode->info = info;
     p = *start; n = 0;
-    while (p->next != NULL) {
+    while (p != end) {
         if (n++ == index) {
             newnode->prev = p;
             newnode->next = p->next;
@@ -135,66 +138,68 @@ int insert_after_index (node_t **start, int info, size_t index)
         }
         p = p->next;
     }
-    if (n == index) { /* index is at the last node */
-        newnode->next = NULL;
+    if (n == index) { /* index is at the last node */ 
         newnode->prev = p;
-        p->next = newnode;
+        p->next = newnode; 
+        newnode->next = *start;
+        (*start)->prev = newnode; 
         return 1;
     }
     free (newnode);
     return -1;  /* index out of bounds, could not be inserted */
 }
 
-/* remove node start  */
 int delete_at_start (node_t **start, int *removed)
 {
-    CHECK_UNDERFLOW (*start);           /* if empty */
-    if ((*start)->next == NULL) {       /* if only node node */
+    node_t *end;
+    CHECK_UNDERFLOW (*start); /* report underflow if empty */
+    if (*start == (*start)->next) { /* if only one node */
         *removed = (*start)->info;
         free (*start);
-        (*start) = NULL;
+        *start = NULL;
         return 1;
-    } 
+    }
+    end = (*start)->prev;
     *removed = (*start)->info;
-    (*start) = (*start)->next;
+    *start = (*start)->next;
     free ((*start)->prev);
-    (*start)->prev = NULL;
+    (*start)->prev = end;
+    end->next = *start;
     return 1;
 }
 
-/* remove elements from the end of the list */
+/* we have access to the end, so its removal is a constant time 
+   operation */
 int delete_at_end (node_t **start, int *removed)
 {
-    node_t *p;
-    CHECK_UNDERFLOW (*start);           /* if empty */
-    if ((*start)->next == NULL) {       /* if only node node */
+    node_t *secondlast, *end;
+    CHECK_UNDERFLOW (*start); /* if list is empty  */
+    if (*start == (*start)->next) { /* if only one node */
         *removed = (*start)->info;
         free (*start);
-        (*start) = NULL;
+        *start = NULL;
         return 1;
-    } 
-    p = *start;
-    while (p->next != NULL) {
-        p = p->next;
     }
-    /* p is pointing to the last node */
-    (p->prev)->next = NULL;
-    *removed = p->info;
-    free (p); 
-    return 1; 
+    end = (*start)->prev;
+    secondlast = (end->prev);
+    (*start)->prev = secondlast;
+    secondlast->next = (*start);
+    *removed = end->info;
+    free (end);
+    return 1;
 }
 
-/* remove elements at arbitrary index */
 int delete_at_index (node_t **start, size_t index, int *removed)
 {
     size_t n;
-    node_t *p;
+    node_t *p, *end;
     if (index == 0) {
         return delete_at_start (start, removed);
     } 
     CHECK_UNDERFLOW (*start); 
+    end = (*start)->prev;
     p = *start; n = 0;
-    while (p->next != NULL) {
+    while (p != end) {
         if (n++ == index) {
             (p->prev)->next = p->next;
             (p->next)->prev = p->prev;
@@ -205,7 +210,8 @@ int delete_at_index (node_t **start, size_t index, int *removed)
         p = p->next;
     }
     if (n == index) { /* delete from the end */
-        (p->prev)->next = NULL;
+        (p->prev)->next = *start;
+        (*start)->prev = p->prev;
         *removed = p->info;
         free (p);
         return 1;
@@ -216,17 +222,27 @@ int delete_at_index (node_t **start, size_t index, int *removed)
 /* frees memory of all remaining nodes */
 int destroy_list (node_t *start) 
 {
-    node_t *p;
-    if (start == NULL) { /* empty list = nothing to free */
+    int same, adjc, i;
+    node_t *p, *q;
+    if (is_empty (start)) { /* nothing to free */
         return 0;
     }
-    p = start;
-    while (p->next != NULL)
-    {
-        p = p->next; /* move to the next node */
-        free (p->prev); /* free the previous ndoe */
+    p = start;              /* start one from the beginning */
+    q = start->prev;        /* start one from the end */
+    same = adjc = i = 0;
+    while (same = (p == q), adjc = (p->next == q), !same && !adjc) {
+        /* Keep freeing from both ends of the list. 
+           This will on average require half as many runs as the number of
+           elements */ 
+        p = p->next;    /* move to the next node */
+        free (p->prev); /* free the previous node */
+        q = q->prev; 
+        free (q->next);
     }
     free (p);
+    if (adjc) {
+        free (q);
+    }
     return 1; 
 }
                           /* end of implementation */
@@ -262,7 +278,7 @@ int main (void)
     node_t *l = NULL; /* list is initially empty */
     char cmd[BUFF], input[BUFF]; /* buffers to store user input */
 
-    printf ("\nImplementation of a Doubly Linked Linear List\n");
+    printf ("\nImplementation of a Doubly Linked Circular List\n");
     printf (MENU);
     while (1)
     {

@@ -18,7 +18,8 @@ typedef struct node {
     struct node *link;
 } node_t; 
 
-int is_empty (node_t *end) {
+int is_empty (node_t *end)
+{
     return (end == NULL);
 }
 
@@ -202,8 +203,7 @@ int destroy_list (node_t *end)
     return 1;
 } 
                           /* end of implementation */
-
-/* macro to get input from the user and store in variable  */
+/* macro to get input from the user and store in variable */
 #define GET_NUM(from,into)  if (fgets (from, BUFF, stdin) == NULL) {\
     fprintf (stderr, "!IO Error. Exiting process.\n");\
     exit (1);\
