@@ -1,11 +1,13 @@
+
 # About 
 
-A repository for assignments as part of the 4th sem course 'Data Structures and
-Algorithms'. 
+A repository for assignments as part of the 4th sem course "Data Structures
+and Algorithms".  
 
-# Contents
+# Contents 
 
-* [assignment1/double_linear.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment1/double_linear.c)
-* [assignment1/main.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment1/main.c)
-* [assignment1/single_circular.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment1/single_circular.c)
-* [assignment1/single_linear.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment1/single_linear.c)
+ * assignment1/
+     + [double_linear.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/double_linear.c)
+     + [main.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/main.c)
+     + [single_circular.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/single_circular.c)
+     + [single_linear.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/single_linear.c)

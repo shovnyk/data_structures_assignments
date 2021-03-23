@@ -363,7 +363,6 @@ int main (void)
                                         "at index %d.\n", x, index);
                             }
                             else if (y == -1) {
-                                /* TODO better this */
                                 fprintf (stderr, "!Index out of bounds.\n");
                             }
                             break;
