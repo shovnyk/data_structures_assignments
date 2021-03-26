@@ -41,6 +41,7 @@ void display (stack_t *s)
     int i;
     if (is_empty (s)) {
         printf ("Stack is empty.\n");
+        return;
     }
     printf (red "%10d " reset " <-- top\n", (s->items)[s->top]);
     for (i = (s->top) - 1; i >= 0; i--) {
