@@ -1,8 +1,8 @@
 /* fixed_sized_stacks.c: C program to implement a fixed sized stack
 
    Stacks have two primitive operations: 
-   1. push() which put values on the top
-   2. pop() which remove values from the top
+   1. push() which puts values on the top
+   2. pop() which removes values from the top
 
    In this implementation we will use arrays having a predefined
    size to design stack that implements these operations. We will
