@@ -1,11 +1,7 @@
 /* stack.c: a simple single linked list implementation of a stack */
 #include <stdio.h>
 #include <stdlib.h>
-
-typedef struct node {
-    int info;
-    struct node *link;
-} stack_t;
+#include "mystack.h"
 
 #define new(x) (x*) malloc (sizeof (x)) 
 #define  RETURN_IF_NULL(x,y) if (x == NULL) {\

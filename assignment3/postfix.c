@@ -17,8 +17,9 @@
 
 /* prototypes for stack functions */
 int   is_empty       (stack_t  *);
-int   push           (stack_t  **,    int  );
-int   pop            (stack_t  **,    int *);
+void  display        (stack_t  *);
+int   push           (stack_t  **,  int  );
+int   pop            (stack_t  **,  int  *);
 int   destroy_stack  (stack_t  *);
 int   size_of_stack  (stack_t  *);
 int   reverse_print  (stack_t  *);
@@ -165,7 +166,6 @@ int eval
     "'6, 2, 3, +, -, 3, 8, 2, /, +, *, 2, ^, 3, +, $'\n"\
     "Press h to display these help instructions. Press q to quit.\n"
 #define PROMPT ">> "
-#define INVALID_INPUT "?\n"
 #define ANS(x) printf ("= %d (ans)\n", x)
 
 int main (void) 
