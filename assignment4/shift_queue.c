@@ -6,11 +6,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define CAPACTITY 10
+#ifndef CAPACITY 
+#define CAPACITY 100
+#endif
+
 typedef struct queue {
     /* for this implementation, front is always = 0 */
     int rear;
-    int item[CAPACTITY];
+    int item[CAPACITY];
 } queue_t;
 
 /* check if the queue is empty */
@@ -22,7 +25,7 @@ int is_empty (queue_t *q)
 /* check id the queue is full */
 int is_full (queue_t *q)
 {
-    return (q->rear == (CAPACTITY - 1));
+    return (q->rear == (CAPACITY - 1));
 }
 
 /* print the contents of the queue from front to rear */
@@ -102,9 +105,9 @@ int main (void)
     queue_t q = { /* initialize the queue */
         -1,       /* rear = -1 */
         {0}       /* set all the values to 0 */
-    };
-
-    printf ("Implementation of a fixed sized queue.\n");
+    }; 
+    printf ("Alternate implementation of a queue of fixed size = %d.\n",
+            CAPACITY);
     printf (MENU);
     while (1) 
     {

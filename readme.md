@@ -26,3 +26,6 @@ and Algorithms".
      + [main.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment4/main.c)
      + [shift_queue.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment4/shift_queue.c)
      + [simple_queue.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment4/simple_queue.c)
+ * assignment5/
+     + [cq.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment5/cq.c)
+     + [minpq.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment5/minpq.c)

@@ -1,22 +1,17 @@
-/*  simple_queue.c: C program to implement a fixed sized queue without 
-    shifting operation of the elements. 
-
-    A queue is a list like data structure which allows first in first out
-    or 'FIFO' access to its elements. It is inspired by queues that form in
-    real life and are effective for addressing problems which exhibit such
-    patterns.  As such it has two primitive operations:
-
-     i. insertion/enqueue() - which inserts elements at the end or 'rear'
-    ii. deletiton/dequeue() - which removes elements from the FRONT
-                                _______________
-                     dequeue <--- |  |  |  |  <--- enqueue
-                     (front)    ---------------    (rear)
+/* cq.c: C program to implement a Circular Queue
+   
+   a Circular Queue, like a Queue, is also a (First  In First Out) data 
+   structture which  allows the total size  of the array (in  the array 
+   implementation) to be used, while keeping  the time of access of the 
+   first  and  last elements  the  same.  Thus  it  is space  and  time 
+   efficient.                                                           
 */
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef CAPACITY    /* allow capacity to be changed before compile time */
-#define CAPACITY 100 /* define a reasonable fixed size for the queue */
+/* allow size to be changed via preprocessor before compiling */
+#ifndef CAPACITY 
+#define CAPACITY 100
 #endif
 
 typedef struct queue {
@@ -25,62 +20,82 @@ typedef struct queue {
     int item[CAPACITY];
 } queue_t;
 
+/* check if the queue is full */
+int is_full (queue_t *q)
+{
+    /* 2 cases in which queue may be full: */
+    int case1 = (q->front == (q->rear + 1)); 
+    int case2 =  ((q->front == 0) && (q->rear == (CAPACITY - 1)));
+    return case1 || case2;
+}
+
 /* check if the queue is empty */
 int is_empty (queue_t *q)
 {
-    /* the queue can be empty in two cases: */
-    return (q->front == -1) /* either it has just been initialized */
-        || (q->front == q->rear + 1); /* or all elements have been deleted */
+    /* before removing only element, we set both front and rear
+       to -1. But front is never -1, again so we only check if
+       front is -1 */
+    return (q->front == -1);
 }
 
-/* check id the queue is full */
-int is_full (queue_t *q)
-{
-    return (q->rear == (CAPACITY - 1)); /* the rear points to last index */
-}
-
-/* print the contents of the queue from front to rear */
-int display (queue_t *q)
+/* display the contents of the queue, everything between front and rear */
+int display (queue_t *q) 
 {
     int i;
     if (is_empty (q)) {
-        printf ("Queue is empty.\n");
+        printf ("Queue is empty\n");
         return 0;
     }
-    /* at any point of time the queue is effectively all the elements
-       between front and rear (inclusive) */
-    for (i = q->front; i <= q->rear; i++) {
-        printf ("%d ", (q->item)[i]);
+    if (q->rear >= q->front) {
+       for (i = q->front; i <= q->rear; i++) {
+            printf ("%d ", (q->item)[i]);
+       }
     }
-    putchar ('\n');
+    /* for linear queue, rear always >= front, here not always so.
+       In such cases, we need to print to the end and loop around 
+       back to rear */
+    else {
+        i = q->front;
+        do {
+            printf ("%d ", (q->item)[i]);
+            i = (i + 1) % CAPACITY;
+        } 
+        while (i != (q->rear + 1));
+    }
+    putchar('\n');
     return 1;
 }
 
-/* insert an element into the rear of the queue */
-int enqueue (queue_t *q, int info) 
+/* insert an element at the rear of the queue */
+int enqueue (queue_t *q, int data)
 {
-    if (is_full (q)) { /* overflow */
+    if (is_full (q)) { /* queue overflow */
         return 0;
     }
-    if (is_empty (q)) {
-        (q->front)++;  
-        /* if first element is being added, increment front */
+    /* arithmetic mmodulo operation resets rear to 0 after it has 
+       attained the value CAPACITY - 1 */
+    q->rear = (q->rear + 1) % CAPACITY;
+    (q->item)[q->rear] = data; 
+    if (q->front == -1) { /* if empty, increment front */
+        q->front = 0;
     }
-    /* move rear one position ahead and store new value */
-    /* pre increment allows us to do in a single step */
-    (q->item)[++(q->rear)] = info;  
-    return 1; 
+    return 1;
 }
 
-/* delete an element from the front of the queue */
+/* remove an element from the front of the queue */
 int dequeue (queue_t *q, int *removed)
 {
-    if (is_empty (q)) { /* underflow */
+    if (is_empty (q)) { /* queue underflow */
         return 0;
     }
-    /* increment front by one so the previous value is effectivley lost */
-    /* post increment allows us to store the value before incrementing */
-    *removed = (q->item)[(q->front)++]; 
+    *removed = (q->item)[q->front]; 
+    if (q->front == q->rear) { /* queue has only one element */
+    /* set front and rear to -1 to indicate empty list */
+        q->front = -1;
+        q->rear = -1;
+    }
+    else  /* front should loop around back to the end */
+        q->front = (q->front + 1) % CAPACITY; 
     return 1;
 }
                           /* end of implementation */
@@ -116,12 +131,13 @@ int main (void)
 {
     char input[BUFF];
     int to_be_enqueued, dequeued;
-    queue_t q = { /* initially, */
+    queue_t q = { /* initially, we set the queue to be empty: */
         -1,       /* front = -1, */ 
         -1,       /* rear  = -1, */
-        {0}       /* and queue is empty */
+        {0}       /* say all the elements are zero initially */
     }; 
-    printf ("Implementation of a queue of fixed size = %d.\n", CAPACITY);
+    printf ("Implementation of a Circular Queue of fixed size " 
+            "= %d.\n", CAPACITY);
     printf (MENU);
     while (1) 
     {
