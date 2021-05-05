@@ -1,0 +1,51 @@
+1. SORTING:
+    + iterative: bubble, selection and insertion sorts
+    + recursive: merge and quick sorts 
+    + inplace: bubble, insertion, selection and quick sorts
+    + out-of-place: merge sort
+    + divide-and-conquer: merge and quick sorts
+    + efficient: merge (worst case O(nlgn)) and quick (avg case O(nlgn)) sorts 
+    + inefficient: bubble, selection and insertion (worst case O(nlgn)) sorts
+    + standard sorting function: qsort (stdlib.h) and how it works
+    + how to prevent overflow when computing mid index of array for merge sort
+
+2. TIMING FUNCTIONS: 
+    + clock  (time.h)
+    + clock_gettime (time.h)
+
+2. TIME COMPLEXITY ANALYSIS (CLRS):
+    + analysis using algebra
+    + analysis using recurrence relation
+
+5. FUNCTION POINTERS:
+    + basic syntax: (a) declaration, (b) assignment and (c) usage 
+    + array of function pointers
+    + using function pointers to time sorting algos
+
+4. SWAPPING:
+    + avoiding integer overflows
+    + why call by reference swapping or temporary variable is superior
+    + why swapping by addition fails for quicksort
+
+3. GENERATING ARRAYS WITH RANDOM ELEMENTS:
+    + rand (stdlib.h)
+    + srand (stdlib.h) to set the seed
+    + time (time.h) to set the value of the seed.
+    + use of static storage class to call a function just once
+    + generating a random integer in a given range.
+
+6. GENERATING PLOTS WITH GNU PLOT
+
+6. IO STUFF:
+    + use perror (stdio.h) and strerror (string.h) instead of own errormsg.
+    + problems with using getchar, overcoming with fgets 
+        + using strchr (string.h) to check for newline if input too long.
+        + newline left behind in stdin
+    + use strtok (string.h) to construct an array out of user string buffer.
+    + problem with converting sscanf from newline to number!
+
+7. FILE IO
+    + fopen, "r", "w" and "a" modes
+    + fprintf 
+    + perror
+    + system (stdlib) for running shell commands and possible errors.

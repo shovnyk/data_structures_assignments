@@ -124,7 +124,6 @@ int destroy_queue (queue_t *q)
     }
     return 1;
 }
-
                           /* end of implementation */
 #define BUFF 256
 #define PROMPT ">>> "
