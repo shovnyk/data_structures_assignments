@@ -139,13 +139,13 @@ int destroy_queue (queue_t *q)
 
 /* read use input from stdin and convert to numeric value, if
    unsuccessful return 0 */
-int get_num (char *buff, size_t size, int *var)
+int getnum (char *buff, size_t size, int *var)
 {
     if (fgets (buff, size, stdin) == NULL) {
         fprintf (stderr, IOE);
         return 0;
     }
-    else if (sscanf (buff, "%d", var) == 0) {
+    else if (sscanf (buff, "%d", var) != 1) {
         fprintf (stderr, INVALID_INPUT);
         return 0;
     }
@@ -170,12 +170,12 @@ int main (void)
             switch (input[0]) {
                 case 'i':
                     printf ("Insert what?\n");
-                    if (!get_num (input, BUFF, &to_be_inserted)) {
+                    if (!getnum (input, BUFF, &to_be_inserted)) {
                         continue;
                     }
                     printf ("What should be the priority of '%d'? ",
                             to_be_inserted);
-                    if (!get_num (input, BUFF, &priority)) {
+                    if (!getnum (input, BUFF, &priority)) {
                         continue;
                     }
                     else {

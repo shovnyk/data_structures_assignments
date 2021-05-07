@@ -211,7 +211,7 @@ int getnum (char *buffer, size_t siz, int *var)
         fprintf (stderr, IOE);
         return 0;
     }
-    else if (sscanf (buffer, "%d", var) == 0) {
+    else if (sscanf (buffer, "%d", var) != 1) {
         fprintf (stderr, INVALID_INPUT);
         return 0;
     }

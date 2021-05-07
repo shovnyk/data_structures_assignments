@@ -51,3 +51,5 @@ and Algorithms".
          - [time_func.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/tests/time_func.c)
          - [use_of_rand.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/tests/use_of_rand.c)
          - [xmalloc.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/tests/xmalloc.c)
+ * assignment7/
+     + [example.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment7/example.c)

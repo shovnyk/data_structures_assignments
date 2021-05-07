@@ -11,6 +11,7 @@
 
 #include "sorting_functions.c" /* implementations of various sorting 
                                   algorithms */
+/* structure to encapsulte array data with its size */
 typedef struct array {
     int count;
     int *ptr;

@@ -96,7 +96,7 @@ char getnum (char *buff, size_t size, int *var)
         fprintf (stderr, "!IO Error.\n");
         return 0;
     }
-    else if (sscanf (buff, "%d", var) == 0) {
+    else if (sscanf (buff, "%d", var) != 1) {
         fprintf (stderr, INVALID_INPUT);
         return buff[0];
     }
