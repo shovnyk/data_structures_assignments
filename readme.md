@@ -52,4 +52,7 @@ and Algorithms".
          - [use_of_rand.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/tests/use_of_rand.c)
          - [xmalloc.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/tests/xmalloc.c)
  * assignment7/
+     + [bst.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment7/bst.c)
+     + [btree_test.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment7/btree_test.c)
      + [example.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment7/example.c)
+     + [traversal.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment7/traversal.c)
