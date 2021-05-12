@@ -111,7 +111,10 @@ int main (void)
     root->right = getnode (50);
     root->left->left = getnode (10);
     root->left->right = getnode (90);
+    btree_info (root);
 
+    /* insert another node to the right of 50 and check again */
+    root->right->right = getnode (777);
     btree_info (root);
 
     destroy_btree (root); /* delete current tree before creating a new one */
@@ -121,7 +124,6 @@ int main (void)
     root->left->left = getnode (4);
     root->right = getnode (3);
     root->right->right = getnode (5);
-
     btree_info (root);
 
     destroy_btree (root);
