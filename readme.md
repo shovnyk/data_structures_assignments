@@ -56,3 +56,6 @@ and Algorithms".
      + [btree_test.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment7/btree_test.c)
      + [example.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment7/example.c)
      + [traversal.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment7/traversal.c)
+ * assignment8/
+     + [bfs.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment8/bfs.c)
+     + [queue.c](https://raw.githubusercontent.com/shovnyk/data_structures_assignments/main/assignment8/queue.c)

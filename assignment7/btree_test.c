@@ -1,3 +1,7 @@
+/* btree_test.c
+   C program to hardcode a binary tree and test if it is a strict
+   or complete binary tree.
+*/
 #include <stdio.h>
 #include <stdlib.h>
 
