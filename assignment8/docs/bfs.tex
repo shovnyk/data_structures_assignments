@@ -1,0 +1,50 @@
+\documentclass{article}
+\usepackage[margin=28mm]{geometry}
+\usepackage{tikz}
+
+\begin{document}
+\tikzstyle{vertex} = [circle, draw=gray!30!black, very thick,
+                      font=\bfseries, minimum size=1cm] 
+\tikzstyle{gray vertex} = [vertex, fill=gray!30]
+\tikzstyle{black vertex} = [vertex, white, fill=gray!20!black ]
+\tikzstyle{edge} = [-latex]
+
+\bigskip
+\begin{figure}\centering
+    \begin{tikzpicture}[scale=1.1, transform shape]
+    \node[vertex] (a) at (-0.5,0) {A};
+    \node[vertex] (d) at (2,0) {D};
+    \node[vertex] (g) at (-3,-1) {G};
+    \node[vertex] (e) at (-1.5,-2) {E};
+    \node[vertex] (c) at (0.5,-2) {C};
+    \node[vertex] (h) at (3.5, -2.5) {H}; 
+    \node[vertex] (f) at (-2.2,-4) {F};
+    \node[vertex] (b) at (1,-4) {B};
+
+    \draw[thick, gray](a) edge (d);
+    \draw[thick, gray](a) edge (c);
+    \draw[thick, gray](b) edge (e);
+    \draw[thick, gray](d) edge (b);
+    \draw[thick, gray](c) edge (h);
+    \draw[thick, gray](f) edge (h);
+    \draw[thick, gray](d) edge (h);
+    \draw[thick, gray](g) edge (a);
+    \draw[thick, gray](g) edge (f);
+    \draw[thick, gray](g) edge (a);
+    \draw[thick, gray](e) edge (f);
+    \draw[thick, gray](e) edge (d);
+
+    \node[above] at (a.north) {0};
+    \node[below] at (b.south) {1};
+    \node[above right] at (c.north east) {2};
+    \node[above right] at (d.north east) {3};
+    \node[above] at (e.north) {4};
+    \node[below] at (f.south) {5};
+    \node[above left] at (g.north west) {6};
+    \node[below right] at (h.south east) {7};
+
+\end{tikzpicture}
+    \caption{Logical diagram of $G = (E, V)$ with indices of the vertices
+    shown next to each vertex}
+\end{figure}
+\end{document}

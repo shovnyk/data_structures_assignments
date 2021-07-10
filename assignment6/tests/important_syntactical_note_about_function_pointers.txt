@@ -1,0 +1,30 @@
+int *modifyarr(int *arr; int len);
+-- function which takes in an array, modifies it
+and returns a pointer that array.
+
+int calculate_sum(int *arr, int len);
+-- function which takes in an array, calculates
+its sum and returns that as an integer
+
+Consider the following to understand the 
+importance of parentheses around name of the 
+function in declaring function pointers:
+
+1. int *modifyarr(int *, int ) // without parens
+
+2. int (*pointer)(int *, int) // with parens
+
+
+(1) is NOT a pointer and merely a FUNCTION
+DECLARATION that sepcifies to the comipiler
+that a function called `modifyarr` exists
+which takes in, as parameters, an integer 
+pointer and an integer and returns an integer
+pointer. This can be used to verify the validity 
+of function calls during compile time. 
+
+(2) is a FUNCTION POINTER DECLARATION where 
+`pointer` is the name of the pointer variable
+that is "MADE CAPABLE" of pointing to any function
+that takes in as arguments, an integer pointer and
+an integer and returns an integer.

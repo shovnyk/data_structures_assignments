@@ -31,8 +31,10 @@ void swap (int *x, int *y)
     *y = *x;
     *x = temp;
 }
+
 int bsort (int *arr, int begin_idx, int end_idx)
 {
+/* simple bubble sort implementation */
     int i, j, len; 
     if (arr == NULL) {
         return 0;
@@ -51,16 +53,21 @@ int bsort (int *arr, int begin_idx, int end_idx)
 int main(void) 
 {  
     puts ("Example 1");
-                        /* step 1: declare pointer */
 
-    /* the syntax is very easy: it is almost identical to the function 
-       declaration except the name of the function is a pointer preceded
-       by a '*' and inside PARENTHESES 
+    /* step 1: declare pointer 
+       the syntax is very easy: it is almost identical to the function
+       declaration except the name of the function is a pointer preceded by a
+       '*' and inside PARENTHESES  <-- this is the only thing you need to keep
+       in mind, otherwise it becomes a function declaration statement instead
+       of a function pointer declaration!
         
                    return-type (*pointer-name) (argslist...)
     */
-    int (*p)(int, int); /* declare a pointer to a function of name 'p' hence
-                           '*p' and accepting arguments of type int, int */
+    int (*p)(int, int); /* declare a pointer to a function: the name of the
+                           pointer variable is `p`. It is capable of only being
+                           assigned to or pointing to function that 1. takes in
+                           two integers as parameters and 2. returns an integer
+                            */
                         
                         /* step 2: assign pointer */
     p = &add;           /* assign to pointer p the starting 'address'
@@ -73,13 +80,22 @@ int main(void)
                            it as you have used add()! */
     printf ("c = %d\n", c);
 
-    p = mult;          /* since mult has the same signature: (int, int) 
-                           so it can be assigned to p as well. Note that
-                           the use of the & operator is optional */
+    /* alternate syntax: omit the & and * altogether! You can do this 
+       because the assignment is unambigous to the compiler. */
+
+    p = mult;          /* since mult has the same signature: (int, int) so it
+                          can be assigned to p as well. Note that the use of
+                          the & operator is optional */
+
     c = p(2, 3);       /* note that dereferencing using * is  optional*/
 
     printf ("c = %d\n", c);
-    
+   
+    /* an application: function pointers can be used to abstract the interface
+       for something like sortng: when many sorting algorithms are avaiable
+       you can simply assign the one you like to a pointer called `sort`
+       and use that everywhere in your code. This would also make your code
+       very modular. */
     puts ("Example 2");
 
     int arr[] = {99, 80, -99, 1, 0, 2, 3, 900};
@@ -94,9 +110,9 @@ int main(void)
         printf ("%d ", arr[i]);
     putchar ('\n');
 
+    /* finally let's take a look at an array of function pointers, functions
+       can be accessed as elements of an array. */
     puts ("Example 3");
-
-    /* finally let's take a look at an array of function pointers */
 
     int (*f[])(int, int) = {add, mult, sub, divide}; 
     /* assigning the names of the function using an array initializer

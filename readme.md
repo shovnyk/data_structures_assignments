@@ -2,7 +2,15 @@
 # About 
 
 A repository for assignments as part of the 4th sem course "Data Structures
-and Algorithms".  
+and Algorithms". This includes stuff like:
++ linked lists: singly and doubly connected, linear and circular
++ stacks
++ queues
++ binary trees and BSTs
++ graphs
+
+![](assignment8/docs/bfs2-0.png)
+![](assignment8/docs/bfs2-1.png)
 
 # Contents 
 
